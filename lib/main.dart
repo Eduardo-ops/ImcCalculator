@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 void main() {
   runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
     home: Home(),
   ));
 }
@@ -13,6 +14,52 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+// Instânciando dois objetos da classe TextEditingController,
+//ficando mais fácil de obter os dados informados.
+  TextEditingController pesoController = TextEditingController();
+  TextEditingController alturaController = TextEditingController();
+
+  String _info = "Informe seus dados";
+
+// Método para atualizar a home principal e seus dados.
+  void _atualizarHome() {
+    setState(() {
+      pesoController.text = "";
+      alturaController.text = "";
+      _info = "Informe seus dados";
+    });
+  }
+
+// Método que realiza o calculo do imc
+  void _calcImc() {
+    setState(() {
+      double wight = double.parse(pesoController.text);
+      double heigth = double.parse(alturaController.text) / 100;
+
+      double imc = wight / (heigth * heigth);
+
+      if (imc < 18.5) {
+        _info =
+            "Cuidado, seu IMC é ${imc.toStringAsPrecision(4)} e você se encontra na classificação de magreza. Você precisa ganhar peso.";
+      } else if (imc > 18.5 && imc < 24.9) {
+        _info =
+            "Parabéns, seu IMC é ${imc.toStringAsPrecision(4)} e você se encontra na classificação normal.";
+      } else if (imc > 24.9 && imc < 30.0) {
+        _info =
+            "Cuidado, seu IMC é ${imc.toStringAsPrecision(4)} e você se encontra na classificação de sobrepeso. Você deve emagrecer.";
+      } else if (imc > 30.0 && imc < 34.9) {
+        _info =
+            "Urgente, seu IMC é ${imc.toStringAsPrecision(4)} e você se encontra na classificação de obesidade grau I. Procure um médico.";
+      } else if (imc > 34.9 && imc < 39.9) {
+        _info =
+            "Urgente, seu IMC é ${imc.toStringAsPrecision(4)}} e você se encontra na classificação de obesidade grau II. Procure um médico.";
+      } else if (imc > 39.9) {
+        _info =
+            "Urgente, seu IMC é ${imc.toStringAsPrecision(4)} e você se encontra na classificação de obesidade grau III. Procure um médico.";
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // Adicionando widget Scaffold para implementar barras de navegação.
@@ -26,7 +73,9 @@ class _HomeState extends State<Home> {
             // implementando um botão de refresh.
             IconButton(
               icon: Icon(Icons.refresh),
-              onPressed: () {},
+              onPressed: () {
+                _atualizarHome();
+              },
             )
           ],
         ),
@@ -47,35 +96,40 @@ class _HomeState extends State<Home> {
               ),
               // adicionado um widget do tipo textField, um campo de digitação que recebe valor númerico.
               TextField(
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                      labelText: "Peso (kg)",
-                      labelStyle:
-                          TextStyle(color: Colors.purple, fontSize: 30.0))),
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                    labelText: "Peso (kg)",
+                    labelStyle:
+                        TextStyle(color: Colors.purple, fontSize: 30.0)),
+                controller: pesoController,
+              ),
               TextField(
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                      labelText: "Altura (cm)",
-                      labelStyle: TextStyle(
-                        color: Colors.purple,
-                        fontSize: 30.0,
-                      ))),
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                    labelText: "Altura (cm)",
+                    labelStyle: TextStyle(
+                      color: Colors.purple,
+                      fontSize: 30.0,
+                    )),
+                controller: alturaController,
+              ),
               Padding(
                 padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
                 child: Container(
                   height: 50.0,
                   child: RaisedButton(
-                    child: Text(
-                      "Calculate",
-                      style: TextStyle(fontSize: 25.0, color: Colors.white),
-                    ),
-                    color: Colors.purple,
-                    onPressed: () {},
-                  ),
+                      child: Text(
+                        "Calculate",
+                        style: TextStyle(fontSize: 25.0, color: Colors.white),
+                      ),
+                      color: Colors.purple,
+                      onPressed: () {
+                        _calcImc();
+                      }),
                 ),
               ),
               Text(
-                "Informações do usuário",
+                "$_info",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.purple, fontSize: 25.0),
               )
