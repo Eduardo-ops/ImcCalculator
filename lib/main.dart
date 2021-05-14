@@ -21,6 +21,9 @@ class _HomeState extends State<Home> {
 
   String _info = "Informe seus dados";
 
+  // Chave global para ser utilizada no formulario.
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
 // Método para atualizar a home principal e seus dados.
   void _atualizarHome() {
     setState(() {
@@ -83,58 +86,77 @@ class _HomeState extends State<Home> {
         // padronizando o body como coluna, ou seja, nossa estrutura será um coluna vertical.
         // Corrgindo a falha que ao abrir o teclado, faz aparecer um alerta com listas coloridas.
         body: SingleChildScrollView(
-          padding: EdgeInsets.all(10.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment
-                .stretch, // Posicionando no centro o eixo cruzado.
-            children: <Widget>[
-              // Adicionado um widge do tipo Icon.
-              Icon(
-                Icons.account_box_rounded,
-                size: 120,
-                color: Colors.purple,
+            padding: EdgeInsets.all(10.0),
+            // Child do tipo form para que possa ser validado os campos preenchidos.
+            child: Form(
+              key: formKey, // Declarando a chave do formulario.
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment
+                    .stretch, // Posicionando no centro o eixo cruzado.
+                children: <Widget>[
+                  // Adicionado um widge do tipo Icon.
+                  Icon(
+                    Icons.account_box_rounded,
+                    size: 120,
+                    color: Colors.purple,
+                  ),
+                  // adicionado um widget do tipo textField, um campo de digitação que recebe valor númerico.
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                        labelText: "Peso (kg)",
+                        labelStyle:
+                            TextStyle(color: Colors.purple, fontSize: 30.0)),
+                    controller: pesoController,
+                    // Validator verificar se o campo foi preenchido com ou sem valor.
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return "Insira o peso!";
+                      }
+                    },
+                  ),
+                  TextFormField(
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                        labelText: "Altura (cm)",
+                        labelStyle: TextStyle(
+                          color: Colors.purple,
+                          fontSize: 30.0,
+                        )),
+                    controller: alturaController,
+                    validator: (value) {
+                      if (value.isEmpty) {
+                        return "Insira sua altura!";
+                      }
+                    },
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
+                    child: Container(
+                      height: 50.0,
+                      child: RaisedButton(
+                          child: Text(
+                            "Calculate",
+                            style:
+                                TextStyle(fontSize: 25.0, color: Colors.white),
+                          ),
+                          color: Colors.purple,
+                          onPressed: () {
+                            // Realizando uma validação da chave do formulario, caso seja validada com todos campos
+                            // preenchidos, será realizado o cálculo.
+                            if (formKey.currentState.validate()) {
+                              _calcImc();
+                            }
+                          }),
+                    ),
+                  ),
+                  Text(
+                    "$_info",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: Colors.purple, fontSize: 25.0),
+                  )
+                ],
               ),
-              // adicionado um widget do tipo textField, um campo de digitação que recebe valor númerico.
-              TextField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                    labelText: "Peso (kg)",
-                    labelStyle:
-                        TextStyle(color: Colors.purple, fontSize: 30.0)),
-                controller: pesoController,
-              ),
-              TextField(
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                    labelText: "Altura (cm)",
-                    labelStyle: TextStyle(
-                      color: Colors.purple,
-                      fontSize: 30.0,
-                    )),
-                controller: alturaController,
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
-                child: Container(
-                  height: 50.0,
-                  child: RaisedButton(
-                      child: Text(
-                        "Calculate",
-                        style: TextStyle(fontSize: 25.0, color: Colors.white),
-                      ),
-                      color: Colors.purple,
-                      onPressed: () {
-                        _calcImc();
-                      }),
-                ),
-              ),
-              Text(
-                "$_info",
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.purple, fontSize: 25.0),
-              )
-            ],
-          ),
-        ));
+            )));
   }
 }
